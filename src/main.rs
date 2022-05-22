@@ -36,7 +36,7 @@ struct ApiDescriptor {
     resources: HashMap<String, ResourceInfo>,
     revision: String,
     root_url: String,
-    schemas: HashMap<String, Value>,
+    schemas: HashMap<String, SchemaInfo>,
     service_path: String,
     title: String,
     version: String,
@@ -99,13 +99,13 @@ struct MethodInfo {
 struct ParameterInfo {
     location: Value,
     #[serde(rename = "type")]
-    type_: Value,
+    type_: ParameterType,
     description: Option<String>,
     default: Option<Value>,
     enum_descriptions: Option<Vec<String>>,
     #[serde(rename = "enum")]
     enum_: Option<Vec<String>>,
-    format: Option<String>,
+    format: Option<ParameterFormat>,
     minimum: Option<Value>,
     maximum: Option<Value>,
     #[serde(default)]
@@ -113,6 +113,40 @@ struct ParameterInfo {
     #[serde(default)]
     repeated: bool,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+enum ParameterType {
+    Array,
+    Boolean,
+    Integer,
+    Number,
+    String,
+    Object,
+}
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "kebab-case")]
+enum ParameterFormat {
+    GoogleDatetime,
+    Int32,
+    Uint32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct SchemaInfo {
+    id: String,
+    properties: HashMap<String, PropertyInfo>,
+    #[serde(rename = "type")]
+    type_: ParameterType,
+}
+#[derive(Serialize, Deserialize, Debug)]
+struct PropertyInfo {
+    description: Option<String>,
+    default: Option<Value>,
+    #[serde(rename = "type")]
+    type_: Option<ParameterType>,
+}
+
 fn main() {
     println!("Hello, world!");
     let args = Cli::parse();
@@ -123,5 +157,6 @@ fn main() {
     let api: ApiDescriptor =
         serde_json::from_reader(reader).expect("couldn't parse service description");
 
-    println!("{:#?}", api.resources["subscriptions"].methods["list"]);
+    // println!("{:#?}", api.resources["subscriptions"].methods["list"]);
+    println!("{:#?}", api.schemas["SubscriptionListResponse"]);
 }
