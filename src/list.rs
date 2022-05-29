@@ -28,13 +28,13 @@ use std::collections::HashMap;
 //  ]
 //}
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
 pub enum DiscoveryListKind {
     #[serde(rename = "discovery#directoryList")]
     DirectoryList,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
 pub enum DiscoveryItemKind {
     #[serde(rename = "discovery#directoryItem")]
     DirectoryItem,
@@ -78,7 +78,32 @@ pub struct DirectoryItem {
 
 pub(crate) const LIST_URL: &str = "https://discovery.googleapis.com/discovery/v1/apis";
 
-pub async fn fetch_current_list(
+/// Fetch a list of all discoverable APIs.
+/// ```
+/// fetch(client);
+/// ```
+pub async fn fetch(client: Client) -> reqwest::Result<DirectoryList> {
+    fetch_impl(client, None, false).await
+}
+
+#[tokio::test]
+async fn it_works() {
+    let client = Client::new();
+    let result = fetch(client).await.unwrap();
+    assert_eq!(result.kind, DiscoveryListKind::DirectoryList);
+}
+
+/// Fetch a specific API designated by the given name.
+pub async fn fetch_specific(client: Client, name: &str) -> reqwest::Result<DirectoryList> {
+    fetch_impl(client, Some(name), false).await
+}
+
+/// Fetch the preferred API version designated by the given name.
+pub async fn fetch_preferred(client: Client, name: &str) -> reqwest::Result<DirectoryList> {
+    fetch_impl(client, Some(name), true).await
+}
+
+async fn fetch_impl(
     client: Client,
     name: Option<&str>,
     preferred: bool,

@@ -28,7 +28,7 @@ async fn main() {
     // println!("{:#?}", api.schemas["SubscriptionListResponse"]);
 
     let client = Client::new();
-    let list = crate::list::fetch_current_list(client, Some("youtube"), false)
+    let list = crate::list::fetch_specific(client, "youtube")
         .await
         .expect("Failed to load directory list");
     println!("{:#?}", list);
