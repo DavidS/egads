@@ -2,6 +2,8 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use crate::{DiscoveryItemKind, DiscoveryListKind, IconKey, Version};
+
 // {
 //  "kind": "discovery#directoryList",
 //  "discoveryVersion": "v1",
@@ -28,31 +30,11 @@ use std::collections::HashMap;
 //  ]
 //}
 
-#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
-pub enum DiscoveryListKind {
-    #[serde(rename = "discovery#directoryList")]
-    DirectoryList,
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
-pub enum DiscoveryItemKind {
-    #[serde(rename = "discovery#directoryItem")]
-    DirectoryItem,
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
-pub enum IconKey {
-    #[serde(rename = "x16")]
-    X16,
-    #[serde(rename = "x32")]
-    X32,
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct DirectoryList {
-    pub discovery_version: String,
+    pub discovery_version: Version,
     pub kind: DiscoveryListKind,
     pub items: Vec<DirectoryItem>,
 }

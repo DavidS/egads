@@ -1,5 +1,5 @@
-mod definitions;
-mod list;
+// mod descriptor;
+// mod list;
 
 use clap::Parser;
 use reqwest::Client;
@@ -28,7 +28,7 @@ async fn main() {
     // println!("{:#?}", api.schemas["SubscriptionListResponse"]);
 
     let client = Client::new();
-    let list = crate::list::fetch_specific(client, "youtube")
+    let list = egads::list::fetch_specific(client, "youtube")
         .await
         .expect("Failed to load directory list");
     println!("{:#?}", list);
