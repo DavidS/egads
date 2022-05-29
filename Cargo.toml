@@ -1,6 +1,7 @@
 [package]
+description = "egads! The Easy Google API Discovery Service tool"
 edition = "2021"
-name = "gapids"
+name = "egads"
 version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,5 +9,7 @@ version = "0.1.0"
 [dependencies]
 clap = {version = "3.0", features = ["derive"]}
 oauth2 = "*"
+reqwest = "*"
 serde = "*"
 serde_json = "*"
+tokio = { version = "1", features = ["full"] }
