@@ -1,5 +1,5 @@
 [package]
-author = ["David Schmitt <david@black.co.at>"]
+authors = ["David Schmitt <david@black.co.at>"]
 description = "egads! The Easy Google API Discovery Service tool"
 documentation = "https://github.com/DavidS/egads"
 edition = "2021"
@@ -13,9 +13,9 @@ version = "0.9.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = {version = "3.0", features = ["derive"]}
-oauth2 = "*"
-reqwest = "*"
-serde = "*"
-serde_json = "*"
-tokio = {version = "1", features = ["full"]}
+clap = {version = "^3.1", features = ["derive"]}
+oauth2 = "^4.2"
+reqwest = "^0.11"
+serde = "^1.0"
+serde_json = "^1.0"
+tokio = {version = "^1.18", features = ["full"]}
