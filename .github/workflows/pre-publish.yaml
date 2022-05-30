@@ -4,7 +4,7 @@ on: push
 
 jobs:
   pre-publish:
-    name: Publish egads
+    name: Test publishing egads
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
