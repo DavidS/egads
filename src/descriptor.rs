@@ -403,7 +403,7 @@ pub async fn fetch_url(client: Client, discovery_rest_url: &str) -> Result<RestD
     let body = response
         .text()
         .await
-        .map_err(|e| Error::new("couldn't receive respponse", Some(e)))?;
+        .map_err(|e| Error::new("couldn't receive response", Some(e)))?;
 
     return from_str(body);
 }

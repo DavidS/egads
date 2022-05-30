@@ -102,7 +102,7 @@ async fn fetch_impl(client: Client, name: Option<&str>, preferred: bool) -> Resu
     let body = response
         .text()
         .await
-        .map_err(|e| Error::new("couldn't receive respponse", Some(e)))?;
+        .map_err(|e| Error::new("couldn't receive response", Some(e)))?;
 
     return from_str(body);
 }
