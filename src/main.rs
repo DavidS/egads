@@ -28,8 +28,16 @@ async fn main() {
     // println!("{:#?}", api.schemas["SubscriptionListResponse"]);
 
     let client = Client::new();
-    let list = egads::list::fetch_specific(client, "youtube")
+    let list = egads::list::fetch_specific(&client, "youtube")
         .await
         .expect("Failed to load directory list");
     println!("{:#?}", list);
+
+    for item in list.items {
+        println!("Fetching {} from {}", item.title, item.discovery_rest_url);
+        let descriptor = egads::descriptor::fetch_item(&client, &item)
+            .await
+            .expect("error retrieving item descriptor");
+        println!("{:#?}", descriptor);
+    }
 }

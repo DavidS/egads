@@ -389,11 +389,11 @@ pub struct Resource {
     pub resources: HashMap<String, Resource>,
 }
 
-pub async fn fetch_item(client: Client, item: &DirectoryItem) -> Result<RestDescription> {
+pub async fn fetch_item(client: &Client, item: &DirectoryItem) -> Result<RestDescription> {
     fetch_url(client, &item.discovery_rest_url).await
 }
 
-pub async fn fetch_url(client: Client, discovery_rest_url: &str) -> Result<RestDescription> {
+pub async fn fetch_url(client: &Client, discovery_rest_url: &str) -> Result<RestDescription> {
     let response = client
         .get(discovery_rest_url)
         .send()

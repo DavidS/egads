@@ -64,28 +64,28 @@ pub(crate) const LIST_URL: &str = "https://discovery.googleapis.com/discovery/v1
 /// ```
 /// fetch(client);
 /// ```
-pub async fn fetch(client: Client) -> Result<DirectoryList> {
+pub async fn fetch(client: &Client) -> Result<DirectoryList> {
     fetch_impl(client, None, false).await
 }
 
 #[tokio::test]
 async fn it_works() {
     let client = Client::new();
-    let result = fetch(client).await.unwrap();
+    let result = fetch(&client).await.unwrap();
     assert_eq!(result.kind, DiscoveryListKind::DirectoryList);
 }
 
 /// Fetch a specific API designated by the given name.
-pub async fn fetch_specific(client: Client, name: &str) -> Result<DirectoryList> {
+pub async fn fetch_specific(client: &Client, name: &str) -> Result<DirectoryList> {
     fetch_impl(client, Some(name), false).await
 }
 
 /// Fetch the preferred API version designated by the given name.
-pub async fn fetch_preferred(client: Client, name: &str) -> Result<DirectoryList> {
+pub async fn fetch_preferred(client: &Client, name: &str) -> Result<DirectoryList> {
     fetch_impl(client, Some(name), true).await
 }
 
-async fn fetch_impl(client: Client, name: Option<&str>, preferred: bool) -> Result<DirectoryList> {
+async fn fetch_impl(client: &Client, name: Option<&str>, preferred: bool) -> Result<DirectoryList> {
     let mut request = client.get(LIST_URL);
 
     if let Some(name) = name {
