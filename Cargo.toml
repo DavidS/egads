@@ -1,7 +1,13 @@
 [package]
+author = ["David Schmitt <david@black.co.at>"]
 description = "egads! The Easy Google API Discovery Service tool"
+documentation = "https://github.com/DavidS/egads"
 edition = "2021"
+homepage = "https://github.com/DavidS/egads"
+license = "Apache-2.0"
 name = "egads"
+readme = "README.md"
+repository = "https://github.com/DavidS/egads"
 version = "0.9.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -12,4 +18,4 @@ oauth2 = "*"
 reqwest = "*"
 serde = "*"
 serde_json = "*"
-tokio = { version = "1", features = ["full"] }
+tokio = {version = "1", features = ["full"]}
