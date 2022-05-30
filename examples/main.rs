@@ -1,6 +1,3 @@
-// mod descriptor;
-// mod list;
-
 use clap::Parser;
 use reqwest::Client;
 // use std::{fs::File, io::BufReader};
@@ -33,16 +30,16 @@ async fn main() {
         .expect("Failed to load directory list");
     // println!("{:#?}", list);
 
-    let mut done = true;
-    let current = "set this to a api name";
+    // let mut done = true;
+    // let current = "set this to a api name";
 
     for item in list.items {
-        if current == item.name {
-            done = false;
-        }
-        if done {
-            continue;
-        }
+        // if current == item.name {
+        //     done = false;
+        // }
+        // if done {
+        //     continue;
+        // }
         println!(
             "Fetching {} ({}) from {}",
             item.name, item.title, item.discovery_rest_url
