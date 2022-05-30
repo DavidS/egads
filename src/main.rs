@@ -33,11 +33,23 @@ async fn main() {
         .expect("Failed to load directory list");
     // println!("{:#?}", list);
 
+    let mut done = true;
+    let current = "set this to a api name";
+
     for item in list.items {
-        println!("Fetching {} from {}", item.title, item.discovery_rest_url);
+        if current == item.name {
+            done = false;
+        }
+        if done {
+            continue;
+        }
+        println!(
+            "Fetching {} ({}) from {}",
+            item.name, item.title, item.discovery_rest_url
+        );
         let descriptor = egads::descriptor::fetch_item(&client, &item)
             .await
             .expect("error retrieving item descriptor");
-        println!("{:#?}", descriptor);
+        println!("{:#?}", descriptor.description);
     }
 }

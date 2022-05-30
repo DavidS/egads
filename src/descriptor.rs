@@ -4,8 +4,8 @@ use serde_json::Value;
 use std::collections::HashMap;
 
 use crate::{
-    list::DirectoryItem, BatchPath, Error, IconKey, ParameterFormat, ParameterType, Ref,
-    RestDescriptionKind, RestProtocol, Result, Version,
+    list::DirectoryItem, Error, IconKey, ParameterFormat, ParameterType, Ref, RestDescriptionKind,
+    RestProtocol, Result, Version,
 };
 // {
 //   "kind": "discovery#restDescription",
@@ -266,7 +266,7 @@ pub struct RestDescription {
     pub discovery_version: Version,
     pub id: String,
     pub name: String,
-    pub canonical_name: String,
+    pub canonical_name: Option<String>,
     pub version: String,
     pub revision: String,
     pub title: String,
@@ -280,7 +280,7 @@ pub struct RestDescription {
     pub base_path: String,
     pub root_url: String,
     pub service_path: String,
-    pub batch_path: BatchPath,
+    pub batch_path: String,
     pub parameters: HashMap<String, Parameter>,
     pub auth: Option<Auth>,
     #[serde(default)]
@@ -299,6 +299,8 @@ pub struct RestDescription {
     pub owner_name: Option<String>,
     #[serde(rename = "version_module")]
     pub version_module: Option<bool>,
+    pub package_path: Option<String>,
+    pub etag: Option<String>,
     //endregion
 }
 
@@ -368,9 +370,10 @@ pub struct Method {
     pub id: String,
     pub path: String,
     pub http_method: String, // TODO: add a enum for this
-    pub description: String,
+    pub description: Option<String>,
     #[serde(default)]
     pub parameters: HashMap<String, Parameter>,
+    #[serde(default)]
     pub parameter_order: Vec<String>,
     pub request: Option<Ref>,
     pub response: Option<Ref>,
@@ -385,6 +388,7 @@ pub struct Method {
     //region other random fields found in actual descriptors
     pub flat_path: Option<String>,
     pub use_media_download_service: Option<bool>,
+    pub streaming_type: Option<String>,
     //endregion
 }
 

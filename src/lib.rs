@@ -43,28 +43,32 @@ pub enum RestProtocol {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
-pub enum BatchPath {
-    #[serde(rename = "batch")]
-    Batch,
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum ParameterType {
+    Any,
     Array,
     Boolean,
     Integer,
     Number,
-    String,
     Object,
+    String,
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub enum ParameterFormat {
-    GoogleDatetime,
     Int32,
     Uint32,
+    Double,
+    Float,
+    Byte,
+    Date,
+    DateTime,
+    GoogleDatetime,
+    GoogleDuration,
+    GoogleFieldmask,
+    Int64,
+    Uint64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
