@@ -2,7 +2,7 @@
 description = "egads! The Easy Google API Discovery Service tool"
 edition = "2021"
 name = "egads"
-version = "0.1.0"
+version = "0.9.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
