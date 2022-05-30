@@ -2,7 +2,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::{DiscoveryItemKind, DiscoveryListKind, IconKey, Version};
+use crate::{DiscoveryItemKind, DiscoveryListKind, Error, IconKey, Result, Version};
 
 // {
 //  "kind": "discovery#directoryList",
@@ -64,7 +64,7 @@ pub(crate) const LIST_URL: &str = "https://discovery.googleapis.com/discovery/v1
 /// ```
 /// fetch(client);
 /// ```
-pub async fn fetch(client: Client) -> reqwest::Result<DirectoryList> {
+pub async fn fetch(client: Client) -> Result<DirectoryList> {
     fetch_impl(client, None, false).await
 }
 
@@ -76,20 +76,16 @@ async fn it_works() {
 }
 
 /// Fetch a specific API designated by the given name.
-pub async fn fetch_specific(client: Client, name: &str) -> reqwest::Result<DirectoryList> {
+pub async fn fetch_specific(client: Client, name: &str) -> Result<DirectoryList> {
     fetch_impl(client, Some(name), false).await
 }
 
 /// Fetch the preferred API version designated by the given name.
-pub async fn fetch_preferred(client: Client, name: &str) -> reqwest::Result<DirectoryList> {
+pub async fn fetch_preferred(client: Client, name: &str) -> Result<DirectoryList> {
     fetch_impl(client, Some(name), true).await
 }
 
-async fn fetch_impl(
-    client: Client,
-    name: Option<&str>,
-    preferred: bool,
-) -> reqwest::Result<DirectoryList> {
+async fn fetch_impl(client: Client, name: Option<&str>, preferred: bool) -> Result<DirectoryList> {
     let mut request = client.get(LIST_URL);
 
     if let Some(name) = name {
@@ -98,9 +94,19 @@ async fn fetch_impl(
     if preferred {
         request = request.query(&[("preferred", "true")]);
     }
-    let response = request.send().await?.text().await?;
+    let response = request
+        .send()
+        .await
+        .map_err(|e| Error::new("couldn't send request", Some(e)))?;
 
-    let result = serde_json::from_str(&response).expect("couldn't parse service list");
+    let body = response
+        .text()
+        .await
+        .map_err(|e| Error::new("couldn't receive respponse", Some(e)))?;
 
-    return Ok(result);
+    return list_from_str(body);
+}
+
+fn list_from_str(response: String) -> Result<DirectoryList> {
+    serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse service list", Some(e)))
 }

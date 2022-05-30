@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::{error::Error as StdError, fmt};
 
 pub mod descriptor;
 pub mod list;
@@ -70,4 +71,55 @@ pub enum ParameterFormat {
 pub struct Ref {
     #[serde(rename = "$ref")]
     pub ref_: Option<String>,
+}
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+/// Errors that may occur while interacting with the discovery API
+pub struct Error {
+    message: String, //TODO: move to Box<Inner> model to reduce size of Error being passed around
+    source: Option<Box<dyn StdError>>,
+}
+
+impl Error {
+    pub(crate) fn new<E>(message: &str, source: Option<E>) -> Error
+    where
+        E: Into<Box<dyn StdError>>,
+    {
+        Error {
+            message: message.into(),
+            source: source.map(Into::into),
+        }
+    }
+}
+
+impl fmt::Debug for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut builder = f.debug_struct("egads::Error");
+
+        builder.field("message", &self.message);
+
+        if let Some(ref source) = self.source {
+            builder.field("source", source);
+        }
+
+        builder.finish()
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Egads! {}", self.message)?;
+        if let Some(e) = &self.source {
+            write!(f, ": {}", e)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl StdError for Error {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        self.source.as_ref().map(|e| &**e as _)
+    }
 }
