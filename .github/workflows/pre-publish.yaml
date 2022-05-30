@@ -1,4 +1,4 @@
-name: "Publish to crates.io"
+name: "Dry-run publishing to crates.io"
 
 on: push
 
