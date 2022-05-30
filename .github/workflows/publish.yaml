@@ -1,6 +1,6 @@
 name: "Publish to crates.io"
 
-on: workflow_dispatch 
+on: workflow_dispatch
 
 jobs:
   publish:
@@ -9,6 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
       - name: Publish egads to crates.io
         uses: katyo/publish-crates@v1
         with:
