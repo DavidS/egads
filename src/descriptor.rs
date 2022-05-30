@@ -1,10 +1,11 @@
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 
 use crate::{
-    BatchPath, IconKey, ParameterFormat, ParameterType, Ref, RestDescriptionKind, RestProtocol,
-    Version,
+    list::DirectoryItem, BatchPath, Error, IconKey, ParameterFormat, ParameterType, Ref,
+    RestDescriptionKind, RestProtocol, Result, Version,
 };
 // {
 //   "kind": "discovery#restDescription",
@@ -386,4 +387,27 @@ pub struct Resource {
     pub methods: HashMap<String, Method>,
     #[serde(default)]
     pub resources: HashMap<String, Resource>,
+}
+
+pub async fn fetch_item(client: Client, item: &DirectoryItem) -> Result<RestDescription> {
+    fetch_url(client, &item.discovery_rest_url).await
+}
+
+pub async fn fetch_url(client: Client, discovery_rest_url: &str) -> Result<RestDescription> {
+    let response = client
+        .get(discovery_rest_url)
+        .send()
+        .await
+        .map_err(|e| Error::new("couldn't send request", Some(e)))?;
+
+    let body = response
+        .text()
+        .await
+        .map_err(|e| Error::new("couldn't receive respponse", Some(e)))?;
+
+    return from_str(body);
+}
+
+pub fn from_str(response: String) -> Result<RestDescription> {
+    serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse service list", Some(e)))
 }

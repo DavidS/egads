@@ -104,9 +104,9 @@ async fn fetch_impl(client: Client, name: Option<&str>, preferred: bool) -> Resu
         .await
         .map_err(|e| Error::new("couldn't receive respponse", Some(e)))?;
 
-    return list_from_str(body);
+    return from_str(body);
 }
 
-pub fn list_from_str(response: String) -> Result<DirectoryList> {
+pub fn from_str(response: String) -> Result<DirectoryList> {
     serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse service list", Some(e)))
 }
