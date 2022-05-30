@@ -282,18 +282,23 @@ pub struct RestDescription {
     pub service_path: String,
     pub batch_path: BatchPath,
     pub parameters: HashMap<String, Parameter>,
-    pub auth: Auth,
+    pub auth: Option<Auth>,
     #[serde(default)]
     pub features: Vec<String>,
+    #[serde(default)]
     pub schemas: HashMap<String, Parameter>,
+    #[serde(default)]
     pub methods: HashMap<String, Method>,
+    #[serde(default)]
     pub resources: HashMap<String, Resource>,
 
     //region other random fields found in actual descriptors
-    pub fully_encode_reserved_expansion: bool,
-    pub mtls_root_url: String,
-    pub owner_domain: String,
-    pub owner_name: String,
+    pub fully_encode_reserved_expansion: Option<bool>,
+    pub mtls_root_url: Option<String>,
+    pub owner_domain: Option<String>,
+    pub owner_name: Option<String>,
+    #[serde(rename = "version_module")]
+    pub version_module: Option<bool>,
     //endregion
 }
 
@@ -301,9 +306,9 @@ pub struct RestDescription {
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Parameter {
-    pub id: String,
+    pub id: Option<String>,
     #[serde(rename = "type")]
-    pub type_: ParameterType,
+    pub type_: Option<ParameterType>,
     #[serde(flatten)]
     pub ref_: Ref,
     pub description: Option<String>,
@@ -318,11 +323,14 @@ pub struct Parameter {
     pub enum_: Option<Vec<String>>,
     pub enum_descriptions: Option<Vec<String>>,
     #[serde(default)]
-    pub repeated: bool,
-    pub location: String,
+    pub repeated: Option<bool>,
+    pub location: Option<String>,
+    #[serde(default)]
     pub properties: HashMap<String, Value>, // TODO: JsonSchema
-    pub additional_properties: Value,       // TODO: JsonSchema
-    pub items: Value,                       // TODO: JsonSchema
+    #[serde(default)]
+    pub additional_properties: Value, // TODO: JsonSchema
+    #[serde(default)]
+    pub items: Value, // TODO: JsonSchema
     pub annotations: Option<Annotations>,
 }
 
@@ -372,10 +380,10 @@ pub struct Method {
     pub supports_media_upload: Option<bool>,
     #[serde(default)]
     pub media_upload: HashMap<String, Value>, //TODO
-    pub supports_subscription: bool,
+    pub supports_subscription: Option<bool>,
 
     //region other random fields found in actual descriptors
-    pub flat_path: String,
+    pub flat_path: Option<String>,
     pub use_media_download_service: Option<bool>,
     //endregion
 }
@@ -409,5 +417,5 @@ pub async fn fetch_url(client: &Client, discovery_rest_url: &str) -> Result<Rest
 }
 
 pub fn from_str(response: String) -> Result<RestDescription> {
-    serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse service list", Some(e)))
+    serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse descriptor", Some(e)))
 }
