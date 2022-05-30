@@ -11,6 +11,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+      - uses: Swatinem/rust-cache@v1
       - name: Publish egads to crates.io
         uses: katyo/publish-crates@v1
         with:
