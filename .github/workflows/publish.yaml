@@ -1,0 +1,15 @@
+name: "Publish to crates.io"
+
+on: workflow_dispatch 
+
+jobs:
+  publish:
+    name: Publish egads
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+      - name: Publish egads to crates.io
+        uses: katyo/publish-crates@v1
+        with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
