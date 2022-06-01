@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::{error::Error as StdError, fmt};
 
 pub mod descriptor;
+pub(crate) mod fetcher;
 pub mod list;
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]

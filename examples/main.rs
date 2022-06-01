@@ -1,5 +1,4 @@
 use clap::Parser;
-use reqwest::Client;
 // use std::{fs::File, io::BufReader};
 
 /// Search for a pattern in a file and display the lines that contain it.
@@ -24,29 +23,53 @@ async fn main() {
     // // println!("{:#?}", api.resources["subscriptions"].methods["list"]);
     // println!("{:#?}", api.schemas["SubscriptionListResponse"]);
 
-    let client = Client::new();
-    let list = egads::list::fetch(&client)
+    let list = egads::list::fetch()
         .await
         .expect("Failed to load directory list");
     // println!("{:#?}", list);
 
+    let mut checks = Vec::new();
+    for item in list.items {
+        // clone a client for each fetch
+        checks.push(tokio::spawn(async move {
+            let _descriptor = egads::descriptor::fetch_item(&item)
+                .await
+                .expect("error retrieving item descriptor");
+        }));
+    }
+
+    let total = checks.len();
+    let mut successes = 0;
+    let mut errors = 0;
+
+    for check in checks {
+        match check.await.ok() {
+            Some(()) => successes += 1,
+            None => errors += 1,
+        }
+    }
+
+    println!(
+        "{} items processed: {} successes, {} errors",
+        total, successes, errors
+    );
     // let mut done = true;
     // let current = "set this to a api name";
 
-    for item in list.items {
-        // if current == item.name {
-        //     done = false;
-        // }
-        // if done {
-        //     continue;
-        // }
-        println!(
-            "Fetching {} ({}) from {}",
-            item.name, item.title, item.discovery_rest_url
-        );
-        let descriptor = egads::descriptor::fetch_item(&client, &item)
-            .await
-            .expect("error retrieving item descriptor");
-        println!("{:#?}", descriptor.description);
-    }
+    // for item in list.items {
+    //     if current == item.name {
+    //         done = false;
+    //     }
+    //     if done {
+    //         continue;
+    //     }
+    //     println!(
+    //         "Fetching {} ({}) from {}",
+    //         item.name, item.title, item.discovery_rest_url
+    //     );
+    //     let descriptor = egads::descriptor::fetch_item(&client, &item)
+    //         .await
+    //         .expect("error retrieving item descriptor");
+    //     println!("{:#?}", descriptor.description);
+    // }
 }
