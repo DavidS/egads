@@ -310,8 +310,7 @@ pub struct Parameter {
     pub id: Option<String>,
     #[serde(rename = "type")]
     pub type_: Option<ParameterType>,
-    #[serde(flatten)]
-    pub ref_: Ref,
+
     pub description: Option<String>,
     pub default: Option<String>,
     #[serde(default)]
@@ -333,6 +332,16 @@ pub struct Parameter {
     #[serde(default)]
     pub items: Value, // TODO: JsonSchema
     pub annotations: Option<Annotations>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+#[serde(deny_unknown_fields)]
+pub struct ParameterOrRef {
+    #[serde(flatten)]
+    pub parameter: Parameter,
+    #[serde(flatten)]
+    pub ref_: Ref,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -371,7 +380,7 @@ pub struct Method {
     pub http_method: String, // TODO: add a enum for this
     pub description: Option<String>,
     #[serde(default)]
-    pub parameters: HashMap<String, Parameter>,
+    pub parameters: HashMap<String, ParameterOrRef>,
     #[serde(default)]
     pub parameter_order: Vec<String>,
     pub request: Option<Ref>,
