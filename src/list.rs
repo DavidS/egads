@@ -96,7 +96,7 @@ async fn fetch_impl(
 
     let body = response.text().await?;
 
-    return from_str(body);
+    from_str(body)
 }
 
 pub fn from_str(json: String) -> Result<DirectoryList> {

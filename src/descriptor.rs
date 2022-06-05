@@ -431,7 +431,7 @@ pub async fn fetch_url(
     let body = response.text().await?;
     debug!("Parsing response");
 
-    return from_str(body);
+    from_str(body)
 }
 
 pub fn from_str(json: String) -> Result<RestDescription> {
