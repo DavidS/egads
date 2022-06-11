@@ -1,3 +1,12 @@
+//! egads! is a simple library to work with [Google API Discovery Service](https://developers.google.com/discovery) definitions.
+//!
+//! This crate is split into the two major operations on the discovery service:
+//! * [`list`] services, and
+//! * fetch a service [`descriptor`].
+//!
+//! Each module contains functions to fetch service lists or descriptors,
+//! as well as a `from_str` function to parse any JSON into objects.
+
 use serde::{Deserialize, Serialize};
 use std::{error::Error as StdError, fmt};
 
