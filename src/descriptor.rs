@@ -415,20 +415,16 @@ pub async fn fetch_item(item: &DirectoryItem) -> Result<RestDescription> {
 
 pub async fn fetch_url(discovery_rest_url: &str) -> Result<RestDescription> {
     let client = build_fetcher();
-    let response = client
-        .get(discovery_rest_url)
-        .send()
-        .await
-        .map_err(|e| Error::new("couldn't send request", Some(e)))?;
+    let response = client.get(discovery_rest_url).send().await?;
 
-    let body = response
-        .text()
-        .await
-        .map_err(|e| Error::new("couldn't receive response", Some(e)))?;
+    let body = response.text().await?;
 
     return from_str(body);
 }
 
 pub fn from_str(response: String) -> Result<RestDescription> {
-    serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse descriptor", Some(e)))
+    serde_json::from_str(&response).map_err(|source| Error::JsonError {
+        message: "couldn't parse descriptor".into(),
+        source,
+    })
 }

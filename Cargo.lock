@@ -149,6 +149,7 @@ dependencies = [
  "reqwest-retry",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
 ]
 

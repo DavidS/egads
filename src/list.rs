@@ -89,19 +89,16 @@ async fn fetch_impl(name: Option<&str>, preferred: bool) -> Result<DirectoryList
     if preferred {
         request = request.query(&[("preferred", "true")]);
     }
-    let response = request
-        .send()
-        .await
-        .map_err(|e| Error::new("couldn't send request", Some(e)))?;
+    let response = request.send().await?;
 
-    let body = response
-        .text()
-        .await
-        .map_err(|e| Error::new("couldn't receive response", Some(e)))?;
+    let body = response.text().await?;
 
     return from_str(body);
 }
 
 pub fn from_str(response: String) -> Result<DirectoryList> {
-    serde_json::from_str(&response).map_err(|e| Error::new("couldn't parse service list", Some(e)))
+    serde_json::from_str(&response).map_err(|source| Error::JsonError {
+        message: "couldn't parse service list".into(),
+        source,
+    })
 }
