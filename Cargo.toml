@@ -30,7 +30,7 @@ tokio = {version = "^1.18", features = ["full"]}
 tonic = "0.6"
 # tonic = "0.7"
 tracing-opentelemetry = {version = "0.17.4", optional = false}
-tracing-subscriber = {version = "0.3.14", features = ["env-filter"]}
+tracing-subscriber = {version = "0.3.14", features = []}
 
 [features]
 tracing = [] # ["dep:tracing", "dep:tracing-opentelemetry"]

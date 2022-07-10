@@ -4,6 +4,7 @@ use futures::stream;
 use futures::StreamExt;
 use opentelemetry::global::shutdown_tracer_provider;
 use tracing::{debug, info, info_span, Instrument};
+use tracing_subscriber::fmt;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::Registry;
 
@@ -16,9 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>
         .install_batch(opentelemetry::runtime::Tokio)?;
 
     let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
-    let subscriber = Registry::default().with(telemetry);
-    //.with(fmt::layer());
-    // .with(EnvFilter::from_default_env());
+    let subscriber = Registry::default().with(telemetry).with(fmt::layer());
     tracing::subscriber::set_global_default(subscriber).expect("setting tracing default failed");
 
     exercise_egads().await;
@@ -26,7 +25,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>
     shutdown_tracer_provider();
     Ok(())
 }
-
 
 async fn exercise_egads() {
     let span = info_span!(target: "egads-test", "exercise_egads");
@@ -56,7 +54,7 @@ async fn exercise_egads() {
             }
             .instrument(info_span!("fetch and process"))
         })
-        .buffer_unordered(150)
+        .buffer_unordered(100)
         .map(|r| match r {
             Ok(_) => successes += 1,
             Err(_) => errors += 1,
