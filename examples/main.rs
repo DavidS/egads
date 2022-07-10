@@ -1,9 +1,9 @@
-use egads::descriptor::from_str;
+use egads::descriptor::fetch_item;
 use egads::fetcher::build_fetcher;
 use futures::stream;
 use futures::StreamExt;
 use opentelemetry::global::shutdown_tracer_provider;
-use tracing::{debug, info, info_span, Instrument};
+use tracing::{debug, info, info_span};
 use tracing_subscriber::fmt;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::Registry;
@@ -43,16 +43,7 @@ async fn exercise_egads() {
     stream::iter(list.items.into_iter())
         .map(|item| {
             let client = &client;
-            let url = item.discovery_rest_url;
-            async move {
-                debug!("Starting descriptor fetch");
-                let resp = client.get(url).send().await?;
-                debug!("Fetching descriptor response");
-                let body = resp.text().await?;
-                debug!("Parsing response");
-                from_str(body)
-            }
-            .instrument(info_span!("fetch and process"))
+            async move { fetch_item(client, &item).await }
         })
         .buffer_unordered(100)
         .map(|r| match r {
