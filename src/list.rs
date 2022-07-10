@@ -97,9 +97,10 @@ async fn fetch_impl(name: Option<&str>, preferred: bool) -> Result<DirectoryList
     return from_str(body);
 }
 
-pub fn from_str(response: String) -> Result<DirectoryList> {
-    serde_json::from_str(&response).map_err(|source| Error::JsonError {
+pub fn from_str(json: String) -> Result<DirectoryList> {
+    serde_json::from_str(&json).map_err(|source| Error::JsonError {
         message: "couldn't parse service list".into(),
+        json,
         source,
     })
 }

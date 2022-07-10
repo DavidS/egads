@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
-use tracing::instrument;
+use tracing::{debug, instrument};
 
 use crate::{
     fetcher::build_fetcher, list::DirectoryItem, Error, IconKey, ParameterFormat, ParameterType,
@@ -424,9 +424,11 @@ pub async fn fetch_url(discovery_rest_url: &str) -> Result<RestDescription> {
     return from_str(body);
 }
 
-pub fn from_str(response: String) -> Result<RestDescription> {
-    serde_json::from_str(&response).map_err(|source| Error::JsonError {
+pub fn from_str(json: String) -> Result<RestDescription> {
+    debug!("Starting descriptor parse");
+    serde_json::from_str(&json).map_err(|source| Error::JsonError {
         message: "couldn't parse descriptor".into(),
+        json,
         source,
     })
 }

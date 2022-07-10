@@ -102,6 +102,7 @@ pub enum Error {
     #[error("json error")]
     JsonError {
         message: String,
+        json: String,
         source: serde_json::Error,
     },
 }
