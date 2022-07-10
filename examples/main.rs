@@ -31,8 +31,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>
 }
 
 
-#[instrument(level = "info")]
 async fn exercise_egads() {
+    let span = info_span!(target: "egads-test", "exercise_egads");
+    let _enter = span.enter();
+
     // println!("Hello, world!");
     // let args = Cli::parse();
     // println!("{:#?}", args.path);
@@ -51,10 +53,12 @@ async fn exercise_egads() {
     // println!("{:#?}", list);
 
     let mut checks = Vec::new();
-    for item in list.items.into_iter().take(10) {
-        // clone a client for each fetch
+    for item in list.items {
+        // clone the span for each fetch
+        let span = span.clone();
         checks.push(tokio::spawn(async move {
             let _descriptor = egads::descriptor::fetch_item(&item)
+                .instrument(span)
                 .await
                 .expect("error retrieving item descriptor");
         }));
@@ -66,7 +70,7 @@ async fn exercise_egads() {
 
     for check in checks {
         match check.await.ok() {
-            Some(()) => successes += 1,
+            Some(_) => successes += 1,
             None => errors += 1,
         }
     }
