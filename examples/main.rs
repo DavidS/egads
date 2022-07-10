@@ -1,7 +1,10 @@
 use clap::Parser;
-// use std::{fs::File, io::BufReader};
+use opentelemetry::global::shutdown_tracer_provider;
+use tracing::{info, instrument, warn};
+use tracing_subscriber::fmt;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::Registry;
 
-/// Search for a pattern in a file and display the lines that contain it.
 #[derive(Parser)]
 struct Cli {
     /// The path to the file to read
@@ -10,7 +13,31 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
+    let tracer = opentelemetry_otlp::new_pipeline()
+        .tracing()
+        .with_exporter(opentelemetry_otlp::new_exporter().tonic())
+        // .install_simple()?;
+        .install_batch(opentelemetry::runtime::Tokio)?;
+
+    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+    let subscriber = Registry::default().with(telemetry).with(fmt::layer());
+    tracing::subscriber::set_global_default(subscriber).expect("setting tracing default failed");
+
+    exercise_egads().await;
+
+    shutdown_tracer_provider();
+    Ok(())
+}
+
+#[instrument]
+fn test() {
+    println!("foo");
+    warn!("tracing warn")
+}
+
+#[instrument(level = "info")]
+async fn exercise_egads() {
     // println!("Hello, world!");
     // let args = Cli::parse();
     // println!("{:#?}", args.path);
@@ -29,7 +56,7 @@ async fn main() {
     // println!("{:#?}", list);
 
     let mut checks = Vec::new();
-    for item in list.items {
+    for item in list.items.into_iter().take(10) {
         // clone a client for each fetch
         checks.push(tokio::spawn(async move {
             let _descriptor = egads::descriptor::fetch_item(&item)
@@ -49,7 +76,7 @@ async fn main() {
         }
     }
 
-    println!(
+    info!(
         "{} items processed: {} successes, {} errors",
         total, successes, errors
     );

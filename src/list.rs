@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-
 use crate::{
     fetcher::build_fetcher, DiscoveryItemKind, DiscoveryListKind, Error, IconKey, Result, Version,
 };
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use tracing::instrument;
 
 // {
 //  "kind": "discovery#directoryList",
@@ -79,6 +79,7 @@ pub async fn fetch_preferred(name: &str) -> Result<DirectoryList> {
     fetch_impl(Some(name), true).await
 }
 
+#[instrument]
 async fn fetch_impl(name: Option<&str>, preferred: bool) -> Result<DirectoryList> {
     let client = build_fetcher();
     let mut request = client.get(LIST_URL);

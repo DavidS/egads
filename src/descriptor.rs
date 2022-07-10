@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
+use tracing::instrument;
 
 use crate::{
     fetcher::build_fetcher, list::DirectoryItem, Error, IconKey, ParameterFormat, ParameterType,
@@ -413,6 +414,7 @@ pub async fn fetch_item(item: &DirectoryItem) -> Result<RestDescription> {
     fetch_url(&item.discovery_rest_url).await
 }
 
+#[instrument]
 pub async fn fetch_url(discovery_rest_url: &str) -> Result<RestDescription> {
     let client = build_fetcher();
     let response = client.get(discovery_rest_url).send().await?;
