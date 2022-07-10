@@ -20,17 +20,17 @@ reqwest-retry = "^0.1"
 serde = {version = "^1.0", features = ["derive"]}
 serde_json = "^1.0"
 thiserror = "1.0.31"
-tonic = "0.6"
-# tonic = "0.7"
 tracing = {version = "0.1.35", features = ["attributes", "max_level_debug", "release_max_level_info"]}
 
 [dev-dependencies]
-clap = {version = "^3.1", features = ["derive"]}
+futures = "0.3.21"
 opentelemetry = {version = "0.17.0", features = ["rt-tokio"]}
 opentelemetry-otlp = {version = "0.10.0"}
 tokio = {version = "^1.18", features = ["full"]}
+tonic = "0.6"
+# tonic = "0.7"
 tracing-opentelemetry = {version = "0.17.4", optional = false}
-tracing-subscriber = "0.3.14"
+tracing-subscriber = {version = "0.3.14", features = ["env-filter"]}
 
 [features]
 tracing = [] # ["dep:tracing", "dep:tracing-opentelemetry"]
