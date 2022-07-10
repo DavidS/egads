@@ -30,11 +30,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>
     Ok(())
 }
 
-#[instrument]
-fn test() {
-    println!("foo");
-    warn!("tracing warn")
-}
 
 #[instrument(level = "info")]
 async fn exercise_egads() {
