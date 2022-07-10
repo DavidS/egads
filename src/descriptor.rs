@@ -1,11 +1,12 @@
+use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 use tracing::{debug, instrument};
 
 use crate::{
-    fetcher::build_fetcher, list::DirectoryItem, Error, IconKey, ParameterFormat, ParameterType,
-    Ref, RestDescriptionKind, RestProtocol, Result, Version,
+    list::DirectoryItem, Error, IconKey, ParameterFormat, ParameterType, Ref, RestDescriptionKind,
+    RestProtocol, Result, Version,
 };
 // {
 //   "kind": "discovery#restDescription",
@@ -410,16 +411,25 @@ pub struct Resource {
     pub resources: HashMap<String, Resource>,
 }
 
-pub async fn fetch_item(item: &DirectoryItem) -> Result<RestDescription> {
-    fetch_url(&item.discovery_rest_url).await
+pub async fn fetch_item(
+    client: &ClientWithMiddleware,
+    item: &DirectoryItem,
+) -> Result<RestDescription> {
+    fetch_url(client, &item.discovery_rest_url).await
 }
 
 #[instrument]
-pub async fn fetch_url(discovery_rest_url: &str) -> Result<RestDescription> {
-    let client = build_fetcher();
+pub async fn fetch_url(
+    client: &ClientWithMiddleware,
+    discovery_rest_url: &str,
+) -> Result<RestDescription> {
+    // debug!("Build descriptor fetcher");
+    // let client = build_fetcher();
+    debug!("Starting descriptor fetch");
     let response = client.get(discovery_rest_url).send().await?;
-
+    debug!("Fetching descriptor response");
     let body = response.text().await?;
+    debug!("Parsing response");
 
     return from_str(body);
 }

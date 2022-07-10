@@ -1,6 +1,5 @@
-use crate::{
-    fetcher::build_fetcher, DiscoveryItemKind, DiscoveryListKind, Error, IconKey, Result, Version,
-};
+use crate::{DiscoveryItemKind, DiscoveryListKind, Error, IconKey, Result, Version};
+use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tracing::instrument;
@@ -65,23 +64,26 @@ pub(crate) const LIST_URL: &str = "https://discovery.googleapis.com/discovery/v1
 /// ```
 /// fetch(client);
 /// ```
-pub async fn fetch() -> Result<DirectoryList> {
-    fetch_impl(None, false).await
+pub async fn fetch(client: &ClientWithMiddleware) -> Result<DirectoryList> {
+    fetch_impl(client, None, false).await
 }
 
 /// Fetch a specific API designated by the given name.
-pub async fn fetch_specific(name: &str) -> Result<DirectoryList> {
-    fetch_impl(Some(name), false).await
+pub async fn fetch_specific(client: &ClientWithMiddleware, name: &str) -> Result<DirectoryList> {
+    fetch_impl(client, Some(name), false).await
 }
 
 /// Fetch the preferred API version designated by the given name.
-pub async fn fetch_preferred(name: &str) -> Result<DirectoryList> {
-    fetch_impl(Some(name), true).await
+pub async fn fetch_preferred(client: &ClientWithMiddleware, name: &str) -> Result<DirectoryList> {
+    fetch_impl(client, Some(name), true).await
 }
 
 #[instrument]
-async fn fetch_impl(name: Option<&str>, preferred: bool) -> Result<DirectoryList> {
-    let client = build_fetcher();
+async fn fetch_impl(
+    client: &ClientWithMiddleware,
+    name: Option<&str>,
+    preferred: bool,
+) -> Result<DirectoryList> {
     let mut request = client.get(LIST_URL);
 
     if let Some(name) = name {

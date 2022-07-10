@@ -12,7 +12,7 @@ use std::io;
 use thiserror::Error;
 
 pub mod descriptor;
-pub(crate) mod fetcher;
+pub mod fetcher;
 pub mod list;
 
 #[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]

@@ -2,7 +2,7 @@ use reqwest::Client;
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
 
-pub(crate) fn build_fetcher() -> ClientWithMiddleware {
+pub fn build_fetcher() -> ClientWithMiddleware {
     let reqwest_client = Client::new();
     let retry_policy = ExponentialBackoff::builder().build_with_max_retries(3);
 
